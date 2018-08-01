@@ -23,7 +23,18 @@ app.post('/todos', (req, res) => {
     });
 });
 
+//fetch all the todos 
+app.get('/todos', (req, res) => {
+    Todo.find().then(todos => {
+        res.send({ todos }); //todos is array
+    }).catch(error => {
+        res.status(400).send(error); 
+    })
+})
+
 //server listen
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000 .');
 });
+
+module.exports = { app };
