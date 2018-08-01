@@ -1,13 +1,20 @@
 const expect = require('expect');
 const request = require('supertest');
+const { ObjectID } = require('mongodb');
 
 const { app } = require('../server');
 const { Todo } = require('../models/todo');
 
 // fake todo
 const todos = [
-    {text: 'Run 10km'},
-    {text: 'Watch Dog'}
+    {   
+        _id: new ObjectID(),
+        text: 'Run 10 km'
+    },
+    {
+        _id: new ObjectID(),
+        text: 'Watch Dog'
+    }
 ];
 
 // clear Database
@@ -71,4 +78,34 @@ describe('GET/ todos', () => {
             .end(done);
             
     });
+});
+
+describe('GET /todos:id', () => {
+    it('Should get Todo by id', (done) => {
+        
+        request(app)
+            .get(`/todos/${todos[0]._id.toHexString()}`) // toHexString() => convert Object to string
+            .expect(200)
+            .expect( res => {
+                expect(res.body.todo.text).toBe(todos[0].text)
+            }).end(done);
+       
+    });
+
+    it('Should return 404 if the iD is not found', (done) => {
+        const ID = new ObjectID().toHexString();
+
+        request(app)
+            .get(`/todos/${ID}`) //real object id but is't right
+            .expect(404)
+            .end(done);
+    })
+
+    it('Should return 400 if the id is facke', done => {
+        request(app)
+            .get(`/todos/1234ad`)
+            .expect(400)
+            .end(done)
+    })
 })
+

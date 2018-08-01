@@ -50,8 +50,15 @@ const { User } = require('../server/models/user');
 // });
 
 // get the record by the defined iD
-User.findById('5b61b3af864d39f817cc92cf').then(user => {
-    console.log(JSON.stringify(user, undefined, 2));
-}).catch(err => {
-   console.log('This user is not Exist. try again! ');
+// User.findById('5b61b3af864d39f817cc92cf').then(user => {
+//     console.log(JSON.stringify(user, undefined, 2));
+// }).catch(err => {
+//    console.log('This user is not Exist. try again! ');
+// });
+
+Todo.find().then(todos => {
+    console.log(`Todos: ${todos[0]._id}`);
+})
+.catch(error => {
+    console.log('Unable to get this todo.[find]');
 });
