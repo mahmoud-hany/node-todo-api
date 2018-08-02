@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const { ObjectID } = require('mongodb'); 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -69,12 +70,48 @@ app.delete('/todos/:id', (req, res) => {
         if(!todo){
             return res.status(404).send(); // Not found if the todo empty
         }
-        
+
         res.send({todo})
     }).catch( err => {
         res.status(400).send(err);
     });
 
+});
+
+
+//update todo
+app.patch('/todos/:id', (req, res) => {
+    //get the id
+    const ID = req.params.id;
+    
+    //check the id validaty
+    if (! ObjectID.isValid(ID)){
+        return res.status(400).send();
+    }
+
+    //pick this two propeties from our todo
+    const body = _.pick(req.body, ['text', 'completed']);
+    
+    //if ther was completed property
+    if(_.isBoolean(body.completed) && body.completed ){
+        body.completed = true;
+        body.completedAt = + new Date(); //current time in meliseconds.
+    } else {
+        body.completed = false;
+        body.completedAt = null;
+    }
+
+    //update todo | {new: true} => to get the updated todo
+    Todo.findOneAndUpdate(ID, {$set: body}, {new: true}).then(todo => {
+        if(!todo ) {
+            return res.status(404).send();
+        }
+
+        res.send({ todo });
+    }).catch(err => {
+        res.status(400).send(err);
+    });
+    
 });
 
 //server listen
