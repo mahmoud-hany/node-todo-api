@@ -1,3 +1,5 @@
+require('../server/config/config');
+
 const _ = require('lodash');
 const { ObjectID } = require('mongodb'); 
 const express = require('express');
