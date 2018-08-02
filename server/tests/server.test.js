@@ -13,7 +13,9 @@ const todos = [
     },
     {
         _id: new ObjectID(),
-        text: 'Watch Dog'
+        text: 'Watch Dog',
+        completed: true,
+        completedAt: 123
     }
 ];
 
@@ -148,5 +150,44 @@ describe('DLETE/todos/:id', () => {
             .expect(400)
             .end(done)
     });
+});
+
+describe('PATCH /todos/:id', () => {
+    it('Should update the todo', (done) => {
+        const ID = todos[1]._id.toHexString();
+        const text = 'I love cats';
+
+        request(app)
+            .patch(`/todos/${ID}`)
+            .send({
+                text,
+                completed: true
+            })
+            .expect(200)
+            .expect( (res) => {
+                expect(res.body.todo.text).toBe(text);
+                expect(res.body.todo.completed).toBe(true);
+            })
+            .end(done);
+    });
+
+    it('Should clear completedAt when the todo is not completed', (done) => {
+        const ID  = todos[0]._id.toHexString();
+        const text = 'Find anthor job';
+
+        request(app)
+            .patch(`/todos/${ID}`)
+            .send({
+                text,
+                completed: false
+            })
+            .expect(200)
+            .expect(res => {
+                expect(res.body.todo.text).toBe(text);
+                expect(res.body.todo.completed).toBe(false);
+                expect(res.body.todo.completedAt).toBeNull();
+            })
+            .end(done);
+    })
 })
 // run test using   [npm run test - npm run test-watch]
